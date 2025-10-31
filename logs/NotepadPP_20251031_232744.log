@@ -1,0 +1,25 @@
+[2025-10-31T23:27:44Z] === [0/6] Installer Verification Started ===
+[2025-10-31T23:27:44Z] [Start] App=NotepadPP Target=E:\PreetiProj\Autodesk\Installer_utility\Installer\apps
+[2025-10-31T23:27:44Z] === [0/6] Uninstall (idempotency) ===
+[2025-10-31T23:27:44Z] [Uninstall] Removing: E:\PreetiProj\Autodesk\Installer_utility\Installer\apps
+[2025-10-31T23:27:44Z] [Uninstall] Result: OK
+[2025-10-31T23:27:44Z] === [1/6] Pre-install sanity check ===
+[2025-10-31T23:27:44Z] [Precheck] Source: 'https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.8.7/npp.8.8.7.Installer.x64.exe'
+[2025-10-31T23:27:45Z] [Precheck] Downloaded in 1 attempt(s), size=6923064 bytes
+[2025-10-31T23:27:45Z] [Precheck] Result: OK (HTTP/HTTPS source accessible and non-zero)
+[2025-10-31T23:27:45Z] === [2/6] Silent simulation ===
+[2025-10-31T23:27:45Z] [Install] Target: E:\PreetiProj\Autodesk\Installer_utility\Installer\apps (timeout=30s, dry_run=False)
+[2025-10-31T23:27:45Z] [Install] Result: OK (layout created: bin/, version.txt, install_meta.json)
+[2025-10-31T23:27:45Z] === [3/6] Install validation ===
+[2025-10-31T23:27:45Z] [Validate] Install dir: OK
+[2025-10-31T23:27:45Z] [Validate] Binary: OK
+[2025-10-31T23:27:45Z] [Validate] Version file: OK (value='1.0.0')
+[2025-10-31T23:27:45Z] [Validate] Structure (bin/, config/): OK
+[2025-10-31T23:27:45Z] [Validate] Result: OK
+[2025-10-31T23:27:45Z] === [5/6] Final status ===
+[2025-10-31T23:27:45Z] [Final] SUCCESS: all required checks passed
+[2025-10-31T23:27:45Z] === [4/6] Summary ===
+[2025-10-31T23:27:45Z] [Summary] Path: E:\PreetiProj\Autodesk\Installer_utility\Installer\installer_summary.json
+[2025-10-31T23:27:45Z] [Summary] Status: success, Duration: 1.239s
+[2025-10-31T23:27:45Z] === [6/6] Completion ===
+[2025-10-31T23:27:45Z] ==== Installer verification completed successfully ====

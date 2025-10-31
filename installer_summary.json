@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "duration_seconds": 1.239,
+  "log_path": "E:\\PreetiProj\\Autodesk\\Installer_utility\\Installer\\logs\\NotepadPP_20251031_232744.log",
+  "checks_run": [
+    "install_dir_exists",
+    "binary_present",
+    "version_file_present",
+    "folder_structure_ok"
+  ]
+}
