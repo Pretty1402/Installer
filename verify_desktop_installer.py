@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
+#exit codes
 EXIT_OK = 0
 EXIT_PRECHECK_FAIL = 2
 EXIT_INSTALL_FAIL = 3
@@ -30,9 +31,11 @@ def _sanitize_for_filename(name: str) -> str:
     return safe or "app"
 
 def setup_logging(app_name: str, logs_dir: Path) -> tuple[logging.Logger, Path]:
+    """ Sets up a file + console logger with UTC timestamps for the given application.
+    """
     logs_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    safe_app = _sanitize_for_filename(app_name)
+    safe_app = "".join(c for c in app_name if c.isalnum() or c in "-_").strip() or "app"
     logfile = logs_dir / f"{safe_app}_{stamp}.log"
 
     logger = logging.getLogger("installer_verifier")
@@ -48,6 +51,8 @@ def setup_logging(app_name: str, logs_dir: Path) -> tuple[logging.Logger, Path]:
     return logger, logfile
 
 def download_with_retry(url: str, dest: Path, logger: logging.Logger) -> tuple[Path, int]:
+    """Downloads a URL to dest with up to 2 attempts and short backoff.
+    """
     headers = {"User-Agent": "installer-verifier/1.0"}
     req = urllib.request.Request(url, headers=headers)
     last_err: Optional[Exception] = None
@@ -67,19 +72,17 @@ def download_with_retry(url: str, dest: Path, logger: logging.Logger) -> tuple[P
     raise RuntimeError(str(last_err) if last_err else "Download failed")
 
 def precheck_source(src: str, logger: logging.Logger) -> Path:
+    """Verifies if installer source is accessible and non-empty (download if URL).
+    """
     logger.info("=== [1/6] Pre-install sanity check ===")
     logger.info(f"[Precheck] Source: {src!r}")
     if is_url(src):
-        with tempfile.TemporaryDirectory(prefix="inst_dl_") as td:
-            tmp_path = Path(td) / "installer.bin"
-            path, attempts = download_with_retry(src, tmp_path, logger)
-            size = path.stat().st_size
-            logger.info(f"[Precheck] Downloaded in {attempts} attempt(s), size={size} bytes")
-            keep_dir = Path(tempfile.mkdtemp(prefix="inst_dl_keep_"))
-            final_path = keep_dir / "installer.bin"
-            shutil.copy2(path, final_path)
-            logger.info("[Precheck] Result: OK (HTTP/HTTPS source accessible and non-zero)")
-            return final_path
+        with tempfile.NamedTemporaryFile(prefix="installer_", suffix=".bin", delete=False) as tf:
+             tmp_path = Path(tf.name)
+             path, attempts = download_with_retry(src, tmp_path, logger)
+             logger.info(f"[Precheck] Downloaded in {attempts} attempt(s)")
+             logger.info("[Precheck] Result: OK (HTTP/HTTPS source accessible and non-zero)")
+             return path
     else:
         path = Path(src).expanduser().resolve()
         if not path.exists():
@@ -92,6 +95,8 @@ def precheck_source(src: str, logger: logging.Logger) -> Path:
         return path
 
 def do_uninstall(install_dir: Path, logger: logging.Logger) -> None:
+    """Removes if any existing install directory to support idempotent runs.
+    """
     logger.info("=== [0/6] Uninstall (idempotency) ===")
     if install_dir.exists():
         logger.info(f"[Uninstall] Removing: {install_dir}")
@@ -102,6 +107,8 @@ def do_uninstall(install_dir: Path, logger: logging.Logger) -> None:
 
 def simulate_silent_install(app_name: str, installer_path: Path, install_dir: Path,
                             timeout_s: int, logger: logging.Logger, dry_run: bool) -> None:
+    """Simulates a silent install by creating the expected layout with timeout handling.
+    """
     logger.info("=== [2/6] Silent simulation ===")
     logger.info(f"[Install] Target: {install_dir} (timeout={timeout_s}s, dry_run={dry_run})")
     start = time.monotonic()
@@ -119,20 +126,14 @@ def simulate_silent_install(app_name: str, installer_path: Path, install_dir: Pa
 
     bin_name = f"{app_name}.exe" if os.name == "nt" else app_name
     (install_dir / "bin" / bin_name).write_text("#!/usr/bin/env bash\n# placeholder\n", encoding="utf-8")
-
-    # Simplified version file per requirement (no derived label)
     (install_dir / "version.txt").write_text("1.0.0\n", encoding="utf-8")
-
-    meta = {
-        "app_name": app_name,
-        "installed_at_utc": utc_ts(),
-        "installed_from": str(installer_path),
-        "version_label": "1.0.0",
-    }
-    (install_dir / "install_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
-    logger.info("[Install] Result: OK (layout created: bin/, version.txt, install_meta.json)")
+    logger.info("[Install] Result: OK (layout created: bin/, version.txt)")
 
 def validate_install(install_dir: Path, app_name: str, logger: logging.Logger) -> list[str]:
+    """Validates that the simulated installation completed successfully by checking for key expected artifacts ie
+       the installation directory, binary, version file, and folder structure without launching the UI
+       Returns a list of performed checks for reporting and summary generation.
+    """
     logger.info("=== [3/6] Install validation ===")
     checks: list[str] = []
 
@@ -171,6 +172,9 @@ def validate_install(install_dir: Path, app_name: str, logger: logging.Logger) -
 
 def write_summary(status: str, started_at: float, log_path: Path, checks: list[str],
                   out_path: Path, logger: logging.Logger) -> None:
+    """Creates a JSON summary file showing the final result, duration,
+    log file path, and which checks were run.
+    """
     logger.info("=== [4/6] Summary ===")
     duration = round(time.monotonic() - started_at, 3)
     summary = {"status": status, "duration_seconds": duration, "log_path": str(log_path), "checks_run": checks}
@@ -179,6 +183,8 @@ def write_summary(status: str, started_at: float, log_path: Path, checks: list[s
     logger.info(f"[Summary] Status: {status}, Duration: {duration}s")
 
 def parse_args() -> argparse.Namespace:
+    """Parses CLI arguments for precheck, install simulation, and validation.
+    """
     p = argparse.ArgumentParser(description="Verify installer by simulating a silent install and validating layout.")
     p.add_argument("--build-url", help="Local file path or HTTP/HTTPS URL to installer")
     p.add_argument("--app-name", required=True, help="Application label (used for bin name)")
