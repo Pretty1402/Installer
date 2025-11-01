@@ -26,10 +26,6 @@ def utc_ts() -> str:
 def is_url(s: str) -> bool:
     return s.startswith(("http://", "https://"))
 
-def _sanitize_for_filename(name: str) -> str:
-    safe = "".join(c for c in name if c.isalnum() or c in "-_").strip()
-    return safe or "app"
-
 def setup_logging(app_name: str, logs_dir: Path) -> tuple[logging.Logger, Path]:
     """ Sets up a file + console logger with UTC timestamps for the given application.
     """
