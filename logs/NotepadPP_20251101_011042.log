@@ -1,0 +1,25 @@
+[2025-11-01T01:10:42Z] === [0/6] Installer Verification Started ===
+[2025-11-01T01:10:42Z] [Start] App=NotepadPP Target=E:\PreetiProj\Autodesk\Installer_utility\Installer\apps
+[2025-11-01T01:10:42Z] === [0/6] Uninstall (idempotency) ===
+[2025-11-01T01:10:42Z] [Uninstall] Removing: E:\PreetiProj\Autodesk\Installer_utility\Installer\apps
+[2025-11-01T01:10:42Z] [Uninstall] Result: OK
+[2025-11-01T01:10:42Z] === [1/6] Pre-install sanity check ===
+[2025-11-01T01:10:42Z] [Precheck] Source: 'E:\\PreetiProj\\Autodesk\\sample_build\\npp.8.8.7.Installer.x64.exe'
+[2025-11-01T01:10:42Z] [Precheck] Local file present, size=6923064 bytes
+[2025-11-01T01:10:42Z] [Precheck] Result: OK (local source accessible and non-zero)
+[2025-11-01T01:10:42Z] === [2/6] Silent simulation ===
+[2025-11-01T01:10:42Z] [Install] Target: E:\PreetiProj\Autodesk\Installer_utility\Installer\apps (timeout=30s, dry_run=False)
+[2025-11-01T01:10:42Z] [Install] Result: OK (layout created: bin/, version.txt)
+[2025-11-01T01:10:42Z] === [3/6] Install validation ===
+[2025-11-01T01:10:42Z] [Validate] Install dir: OK
+[2025-11-01T01:10:42Z] [Validate] Binary: OK
+[2025-11-01T01:10:42Z] [Validate] Version file: OK (value='1.0.0')
+[2025-11-01T01:10:42Z] [Validate] Structure (bin/, config/): OK
+[2025-11-01T01:10:42Z] [Validate] Result: OK
+[2025-11-01T01:10:42Z] === [5/6] Final status ===
+[2025-11-01T01:10:42Z] [Final] SUCCESS: all required checks passed
+[2025-11-01T01:10:42Z] === [4/6] Summary ===
+[2025-11-01T01:10:42Z] [Summary] Path: E:\PreetiProj\Autodesk\Installer_utility\Installer\installer_summary.json
+[2025-11-01T01:10:42Z] [Summary] Status: success, Duration: 0.322s
+[2025-11-01T01:10:42Z] === [6/6] Completion ===
+[2025-11-01T01:10:42Z] ==== Installer verification completed successfully ====
