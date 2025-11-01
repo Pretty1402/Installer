@@ -20,7 +20,7 @@ It produces detailed logs and a machine-readable JSON summary for CI/CD use.
 ## Usage
 Run from a terminal or CI environment.
 
-### Basic Syntax
+### Basic Syntax and Expected Behaviour
 ```bash
 python verify_desktop_installer.py \
   --build-url <path_or_http_url> \
@@ -49,8 +49,6 @@ python verify_desktop_installer.py \
   --uninstall \
   --app-name DemoApp \
   --install-dir ./apps/DemoApp \
-
-
 
 ## How to Run
 Example - Using Notepad++ Installer (Windows PowerShell)
