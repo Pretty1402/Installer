@@ -1,0 +1,17 @@
+Design Notes
+
+>Developed in Python using only standard libraries (argparse, pathlib, urllib, tempfile, json, logging, os, shutil, time) to ensure cross-platform compatibility and easy CI integration.
+
+>The script performs installer verification by simulating a silent install and validating that key files and folders exist after installation.
+
+>Accepts runtime arguments (--build-url, --app-name, --install-dir, --dry-run, --uninstall) to support both local and remote installers, with idempotent runs.
+
+>Includes precheck logic (precheck_source) to confirm installer accessibility and non-zero size, with retry and backoff for network resilience.
+
+>Handles installation simulation (simulate_silent_install) by creating minimal structure (bin/, version.txt) and applying timeout control.
+
+>Performs validation checks (validate_install) to verify directory, binary, version file, and folder structure, ensuring deterministic results.
+
+>Generates structured output (write_summary) containing status, duration, executed checks, and log file path for automated reporting.
+
+>Implements clear exit codes (0–9) and dual logging (setup_logging) to both console and file with UTC timestamps for full traceability.
